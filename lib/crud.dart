@@ -14,12 +14,16 @@ class _CrudState extends State<Crud> {
   
   @override
   Widget build(BuildContext context) {
-    final kitaplarRef=_database.collection('kitaplar');
+    final CollectionReference kitaplarRef=_database.collection('kitaplar');
 
     return Scaffold(
       appBar: AppBar(title: Text("Crud Islemleri Page"),centerTitle: true),
       body: Center(
-        child: Text("Veriler"),
+        child: Column(
+          children: [
+            Text("Veriler"), Divider(), Text("${kitaplarRef.id}")
+          ],
+        ),
       ),
     );
   }
