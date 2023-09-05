@@ -11,18 +11,37 @@ class Crud extends StatefulWidget {
 class _CrudState extends State<Crud> {
   final FirebaseFirestore _database = FirebaseFirestore.instance;
 
-  
+
   @override
   Widget build(BuildContext context) {
-    final CollectionReference kitaplarRef=_database.collection('kitaplar');
+    final CollectionReference kitaplarRef = _database.collection('kitaplar');
+    final DocumentReference hobbitRef = kitaplarRef.doc('Hobbit');
 
     return Scaffold(
-      appBar: AppBar(title: Text("Crud Islemleri Page"),centerTitle: true),
+      appBar: AppBar(title: Text("Crud Islemleri Page"), centerTitle: true),
       body: Center(
         child: Column(
           children: [
-            Text("Veriler"), Divider(), Text("${kitaplarRef.id}")
+            Text("Veriler"), Divider(), Text("${hobbitRef.id}"), /*ElevatedButton(onPressed: () async{
+              var documentSnapshot= await hobbitRef.get();
+              Object? data =documentSnapshot.data();
+              print(data);
+              ////
+              QuerySnapshot collectionSnap= await kitaplarRef.get();
+              List docs =collectionSnap.docs;
+              print(docs.length);
+              print(docs[0].data());
+              docs.forEach((element) {print(element.data()['yazar']);});
+
+
+            }, child: Text("GET DATA"))*/
+            Divider(),
+            StreamBuilder(stream: hobbitRef.snapshots(),
+              builder: (context, AsyncSnapshot<DocumentSnapshot> async)
+              {
+              print('streamden veri geldi.');return Text('StreamBuilder');},)
           ],
+
         ),
       ),
     );
