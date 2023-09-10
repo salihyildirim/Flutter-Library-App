@@ -7,7 +7,7 @@ import '../models/book_model.dart';
 class BooksViewModel extends ChangeNotifier {
   Database _database = Database();
 
-  Stream<List<Book>> getBookList(String collectionPath) {
+  Stream<List<Book>> getBookList() {
     const String collectionPath = 'books';
 
     // //Stream<List<QuerySnapshot>>  --> Stream<List<DocumentSnapshot>>
@@ -15,16 +15,19 @@ class BooksViewModel extends ChangeNotifier {
     //
     // //Stream<List<DocumentSnapshot>>  --> Stream<List<Book>>
     // Stream<List<Book>> bookList= streamListDocument.map((listOfDocSnap) => listOfDocSnap.map((docSnap) => Book.fromMap(docSnap.data())));
-    Stream<List<DocumentSnapshot>> streamListDocument =
-        _database.getBookListFromApi(collectionPath)
-            as Stream<List<DocumentSnapshot<Object?>>>;
+    Stream<List<DocumentSnapshot>> streamListDocument = _database.getBookListFromApi(collectionPath).map((querSnapshot) => querSnapshot.docs);
 
-// Stream<List<DocumentSnapshot>> -> Stream<List<Book>>
     Stream<List<Book>> streamListBook = streamListDocument.map((listOfDocSnap) {
       return listOfDocSnap.map((docSnap) {
         final data = docSnap.data() as Map<String, dynamic>;
         return Book.fromMap(data);
       }).toList();
     });
+    return streamListBook;
+
+
+
+
+
   }
 }

@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../models/book_model.dart';
+
 
 class BooksView extends StatefulWidget {
   const BooksView({super.key});
@@ -46,9 +48,9 @@ class _BooksViewState extends State<BooksView> {
 
               }, child: Text("GET DATA"))*/
               Flexible(
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: kitaplarRef.snapshots(),
-                  builder: (context, AsyncSnapshot<QuerySnapshot> async) {
+                child: StreamBuilder<List<Book>>(
+                  stream: Provider.of<BooksViewModel>(context,listen: false).getBookList(),
+                  builder: (context, AsyncSnapshot async) {
                     if (async.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
                     }
@@ -61,13 +63,13 @@ class _BooksViewState extends State<BooksView> {
                       return Text('Veri bulunamadı veya belge yok.');
                     }
 
-                    var querySnap = async.data?.docs;
+                    List<Book> bookList = async.data;
 
                     return ListView.builder(
-                      itemCount: querySnap?.length,
+                      itemCount: bookList.length,
                       itemBuilder: (context, index) {
-                        Map<String, dynamic> docData =
-                            querySnap?[index].data() as Map<String, dynamic>;
+                        // Map<String, dynamic> docData =
+                        //     querySnap?[index].data() as Map<String, dynamic>;
 
                         return Dismissible(
                           // confirmDismiss: (direction)async {
@@ -81,13 +83,12 @@ class _BooksViewState extends State<BooksView> {
                             alignment: Alignment.centerRight,
                           ),
                           onDismissed: (_) {
-                            querySnap![index].reference.delete(); //deleted
                             // querySnap[index].reference.update({'sene': FieldValue.delete()}); // dökümanın sadece bir alanini siler(sene).
                           },
                           child: Card(
                             child: ListTile(
-                              title: Text(docData['ad'].toString()),
-                              subtitle: Text(docData['yazar'].toString()),
+                              title: Text(bookList[index].authorName),
+                              subtitle: Text(bookList[index].bookName),
                             ),
                           ),
                         );
