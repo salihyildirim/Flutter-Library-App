@@ -6,16 +6,17 @@ import '../models/book_model.dart';
 
 class BooksViewModel extends ChangeNotifier {
   Database _database = Database();
+  static const String collectionPath = 'books';
 
   Stream<List<Book>> getBookList() {
-    const String collectionPath = 'books';
-
     // //Stream<List<QuerySnapshot>>  --> Stream<List<DocumentSnapshot>>
     // Stream<List<DocumentSnapshot>> streamListDocument= _database.getBookListFromApi(collectionPath).map((querySnapshot) => querySnaps.docs);
     //
     // //Stream<List<DocumentSnapshot>>  --> Stream<List<Book>>
     // Stream<List<Book>> bookList= streamListDocument.map((listOfDocSnap) => listOfDocSnap.map((docSnap) => Book.fromMap(docSnap.data())));
-    Stream<List<DocumentSnapshot>> streamListDocument = _database.getBookListFromApi(collectionPath).map((querSnapshot) => querSnapshot.docs);
+    Stream<List<DocumentSnapshot>> streamListDocument = _database
+        .getBookListFromApi(collectionPath)
+        .map((querSnapshot) => querSnapshot.docs);
 
     Stream<List<Book>> streamListBook = streamListDocument.map((listOfDocSnap) {
       return listOfDocSnap.map((docSnap) {
@@ -24,10 +25,10 @@ class BooksViewModel extends ChangeNotifier {
       }).toList();
     });
     return streamListBook;
+  }
 
-
-
-
-
+  Future<void> deleteBook(Book book) async {
+    await _database.deleteDocument(
+        collectionPath: collectionPath, docId: book.id);
   }
 }

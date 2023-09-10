@@ -84,6 +84,7 @@ class _BooksViewState extends State<BooksView> {
                           ),
                           onDismissed: (_) {
                             // querySnap[index].reference.update({'sene': FieldValue.delete()}); // dökümanın sadece bir alanini siler(sene).
+                            Provider.of<BooksViewModel>(context,listen: false).deleteBook(bookList[index]);
                           },
                           child: Card(
                             child: ListTile(
@@ -97,7 +98,6 @@ class _BooksViewState extends State<BooksView> {
                   },
                 ),
               ),
-              Divider(),
             ],
           ),
         ),

@@ -5,15 +5,17 @@ import '../models/book_model.dart';
 class Database {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+
   Stream<QuerySnapshot> getBookListFromApi(String collectionPath) {
     return _firestore.collection(collectionPath).snapshots();
   }
 
-  deleteBook(String collectionPath,String docId){
-    _firestore.collection(collectionPath).doc(docId).delete();
+  Future<void>deleteDocument({required String collectionPath,required String docId})async {
+    await _firestore.collection(collectionPath).doc(docId).delete();
   }
 
-  addBook(String collectionPath, Book book){
+  addDocument(String collectionPath, Book book){
     _firestore.collection(collectionPath).add(book as Map<String, dynamic>);
   }
+
 }
