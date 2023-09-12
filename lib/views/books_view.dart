@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_firestore/views/add_book_view.dart';
 import 'package:firebase_firestore/views/books_view_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class _BooksViewState extends State<BooksView> {
       builder:(context,child)=> Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-
+            Navigator.push(context,MaterialPageRoute(builder: (context)=> AddBookView()));
           },
           child: Icon(Icons.add),
         ),
