@@ -1,3 +1,4 @@
+import 'package:firebase_firestore/services/calculator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -58,7 +59,15 @@ class _AddBookViewState extends State<AddBookView> {
                       return null;
                     }
                   }),
-              TextFormField(
+              TextFormField(onTap: () async{
+                var selectedDate =await showDatePicker(context: context,
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime(-1000),
+                    lastDate: DateTime.now());
+                if(selectedDate!=null) {
+                  publishCtr.text=Calculator.dateTimeToString(selectedDate);
+                }
+              },
                   controller: publishCtr,
                   decoration: InputDecoration(
                       hintText: 'Basım Yılı', icon: Icon(Icons.date_range)),
@@ -74,7 +83,8 @@ class _AddBookViewState extends State<AddBookView> {
               ),
               ElevatedButton(
                   onPressed: () {
-                    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+                    if (_formKey.currentState != null &&
+                        _formKey.currentState!.validate()) {
 
                     }
                   },
