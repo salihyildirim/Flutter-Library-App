@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_firestore/views/add_book_view.dart';
 import 'package:firebase_firestore/views/books_view_model.dart';
+import 'package:firebase_firestore/views/update_book_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../models/book_model.dart';
-
 
 class BooksView extends StatefulWidget {
   const BooksView({super.key});
@@ -16,18 +16,19 @@ class BooksView extends StatefulWidget {
 }
 
 class _BooksViewState extends State<BooksView> {
-
-
   @override
   Widget build(BuildContext context) {
     // final DocumentReference hobbitRef = kitaplarRef.doc('Hobbit');
 
     return ChangeNotifierProvider<BooksViewModel>(
-      create: (BuildContext context) { return BooksViewModel(); },
-      builder:(context,child)=> Scaffold(
+      create: (BuildContext context) {
+        return BooksViewModel();
+      },
+      builder: (context, child) => Scaffold(
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            Navigator.push(context,MaterialPageRoute(builder: (context)=> AddBookView()));
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => AddBookView()));
           },
           child: Icon(Icons.add),
         ),
@@ -50,7 +51,8 @@ class _BooksViewState extends State<BooksView> {
               }, child: Text("GET DATA"))*/
               Flexible(
                 child: StreamBuilder<List<Book>>(
-                  stream: Provider.of<BooksViewModel>(context,listen: false).getBookList(),
+                  stream: Provider.of<BooksViewModel>(context, listen: false)
+                      .getBookList(),
                   builder: (context, AsyncSnapshot async) {
                     if (async.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
@@ -85,11 +87,22 @@ class _BooksViewState extends State<BooksView> {
                           ),
                           onDismissed: (_) {
                             // querySnap[index].reference.update({'sene': FieldValue.delete()}); // dökümanın sadece bir alanini siler(sene).
-                            Provider.of<BooksViewModel>(context,listen: false).deleteBook(bookList[index]);
+                            Provider.of<BooksViewModel>(context, listen: false)
+                                .deleteBook(bookList[index]);
                           },
                           child: Card(
                             child: ListTile(
                               title: Text(bookList[index].authorName),
+                              trailing: IconButton(
+                                icon: Icon(Icons.change_circle),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const UpdateBookView()));
+                                },
+                              ),
                               subtitle: Text(bookList[index].bookName),
                             ),
                           ),
