@@ -20,7 +20,7 @@ class Book {
         'publishDate': publishDate
       };
 
-  factory Book.fromMap(Map map) => Book(
+  factory Book.fromMap(Map map) => Book( //named constructor icin factory kullanırsın.
       id: map['id'],
       bookName: map['bookName'],
       authorName: map['authorName'],

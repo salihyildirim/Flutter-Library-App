@@ -20,6 +20,6 @@ class AddBookViewModel extends ChangeNotifier {
         publishDate: Calculator.dateTimeToTimeStamp(publishDate));
 
     /// Bu kitap bilgisini database servisi üzerinden Firestore'a yazacak.
-    await _database.addDocument(collectionPath, newBook.toMap());
+    await _database.createDocument(collectionPath, newBook.toMap());
   }
 }

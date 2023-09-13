@@ -90,6 +90,7 @@ class _AddBookViewState extends State<AddBookView> {
                     onPressed: () async{
                       if (_formKey.currentState != null &&
                           _formKey.currentState!.validate()) {
+                        //Provider.of..... yerine context.read or watch
                         await context.read<AddBookViewModel>().addNewBook(bookName: bookCtr.text, authorName: authorCtr.text, publishDate: _selectedDate);
                         Navigator.pop(context);
 
