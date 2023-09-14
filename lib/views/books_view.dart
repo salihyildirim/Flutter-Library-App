@@ -1,8 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_firestore/views/add_book_view.dart';
 import 'package:firebase_firestore/views/books_view_model.dart';
 import 'package:firebase_firestore/views/update_book_view.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -94,13 +92,13 @@ class _BooksViewState extends State<BooksView> {
                             child: ListTile(
                               title: Text(bookList[index].authorName),
                               trailing: IconButton(
-                                icon: Icon(Icons.change_circle),
+                                icon: Icon(Icons.edit),
                                 onPressed: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const UpdateBookView()));
+                                               UpdateBookView(book:bookList[index])));
                                 },
                               ),
                               subtitle: Text(bookList[index].bookName),
