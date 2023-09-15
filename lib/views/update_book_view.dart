@@ -7,6 +7,7 @@ import '../models/book_model.dart';
 
 class UpdateBookView extends StatefulWidget {
   final Book book;
+
   UpdateBookView({required this.book});
 
   @override
@@ -14,15 +15,25 @@ class UpdateBookView extends StatefulWidget {
 }
 
 class _UpdateBookViewState extends State<UpdateBookView> {
-  TextEditingController bookController=TextEditingController();
-  TextEditingController authorController=TextEditingController();
-  TextEditingController publishController=TextEditingController();
+  TextEditingController bookController = TextEditingController();
+  TextEditingController authorController = TextEditingController();
+  TextEditingController publishController = TextEditingController();
+  var _selectedDate;
+
+  void dispose() {
+    // TODO: implement dispose
+    bookController.dispose();
+    authorController.dispose();
+    publishController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    bookController.text=widget.book.bookName;
-    authorController.text=widget.book.authorName;
-    publishController.text=Calculator.dateTimeToString(Calculator.dateTimeFromTimeStamp(widget.book.publishDate));
+    bookController.text = widget.book.bookName;
+    authorController.text = widget.book.authorName;
+    publishController.text = Calculator.dateTimeToString(
+        Calculator.dateTimeFromTimeStamp(widget.book.publishDate));
     return ChangeNotifierProvider<UpdateBookViewModel>(
       create: (BuildContext context) {
         return UpdateBookViewModel();
@@ -58,19 +69,42 @@ class _UpdateBookViewState extends State<UpdateBookView> {
                     ),
                     TextFormField(
                       controller: authorController,
-                      decoration: InputDecoration(hintText: '$authorController'),
+                      decoration:
+                          InputDecoration(hintText: '$authorController'),
                     ),
                     SizedBox(
                       height: 15,
                     ),
                     TextFormField(
+                      onTap: () async {
+                        _selectedDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(-1000),
+                            lastDate: DateTime.now());
+                        if (_selectedDate != null) {
+                          publishController.text =
+                              Calculator.dateTimeToString(_selectedDate);
+                        }
+                      },
                       controller: publishController,
-                      decoration: InputDecoration(hintText: '$publishController'),
+                      decoration:
+                          InputDecoration(hintText: '$publishController'),
                     ),
                     SizedBox(
                       height: 15,
                     ),
-                    ElevatedButton(onPressed: () {}, child: Text("Güncelle")),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<UpdateBookViewModel>().updateBook(
+                            bookName: bookController.text,
+                            authorName: authorController.text,
+                            publishDate: _selectedDate,
+                            book: widget.book);
+                        Navigator.pop(context);
+                      },
+                      child: Text("Güncelle"),
+                    ),
                     SizedBox(
                       height: 15,
                     ),

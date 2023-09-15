@@ -14,7 +14,7 @@ class Database {
     await _firestore.collection(collectionPath).doc(docId).delete();
   }
 
-  Future<void> createDocument(
+  Future<void> setBookData(
       String collectionPath, Map<String, dynamic> book) async {
     await _firestore
         .collection(collectionPath)
