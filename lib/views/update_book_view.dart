@@ -7,111 +7,107 @@ import '../models/book_model.dart';
 
 class UpdateBookView extends StatefulWidget {
   final Book book;
-
-  UpdateBookView({required this.book});
+  const UpdateBookView({super.key, required this.book});
 
   @override
   State<UpdateBookView> createState() => _UpdateBookViewState();
 }
 
 class _UpdateBookViewState extends State<UpdateBookView> {
-  TextEditingController bookController = TextEditingController();
-  TextEditingController authorController = TextEditingController();
-  TextEditingController publishController = TextEditingController();
+  TextEditingController bookCtr = TextEditingController();
+  TextEditingController authorCtr = TextEditingController();
+  TextEditingController publishCtr = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
   var _selectedDate;
 
+  @override
   void dispose() {
     // TODO: implement dispose
-    bookController.dispose();
-    authorController.dispose();
-    publishController.dispose();
+    bookCtr.dispose();
+    authorCtr.dispose();
+    publishCtr.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    bookController.text = widget.book.bookName;
-    authorController.text = widget.book.authorName;
-    publishController.text = Calculator.dateTimeToString(
-        Calculator.dateTimeFromTimeStamp(widget.book.publishDate));
+    bookCtr.text =widget.book.bookName;
+    authorCtr.text=widget.book.authorName;
+    publishCtr.text=Calculator.dateTimeToString(Calculator.dateTimeFromTimeStamp(widget.book.publishDate));
     return ChangeNotifierProvider<UpdateBookViewModel>(
-      create: (BuildContext context) {
-        return UpdateBookViewModel();
-      },
-      builder: (context, child) => Scaffold(
-        appBar: AppBar(title: Text("Kitap Güncelle"), centerTitle: true),
+      create: (_) => UpdateBookViewModel(),
+      builder: (context, _) => Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text('Kitap Güncelleme Sayfası'),
+        ),
         body: Container(
-          margin: EdgeInsets.all(20),
-          child: StreamBuilder<List<Book>>(
-            stream: Provider.of<UpdateBookViewModel>(context, listen: false)
-                .getBookList(),
-            builder: (BuildContext context, AsyncSnapshot<List<Book>> async) {
-              if (async.connectionState == ConnectionState.waiting) {
-                return CircularProgressIndicator();
-              }
-
-              if (async.hasError) {
-                return Text('Veri yüklenirken bir hata oluştu.');
-              }
-
-              if (!async.hasData || async.data == null) {
-                return Text('Veri bulunamadı veya belge yok.');
-              }
-              return ListView(children: [
-                Column(
-                  children: [
-                    TextFormField(
-                      controller: bookController,
-                      decoration: InputDecoration(hintText: '$bookController'),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    TextFormField(
-                      controller: authorController,
-                      decoration:
-                          InputDecoration(hintText: '$authorController'),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    TextFormField(
-                      onTap: () async {
-                        _selectedDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(-1000),
-                            lastDate: DateTime.now());
-                        if (_selectedDate != null) {
-                          publishController.text =
-                              Calculator.dateTimeToString(_selectedDate);
-                        }
-                      },
-                      controller: publishController,
-                      decoration:
-                          InputDecoration(hintText: '$publishController'),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<UpdateBookViewModel>().updateBook(
-                            bookName: bookController.text,
-                            authorName: authorController.text,
-                            publishDate: _selectedDate,
-                            book: widget.book);
+          padding: EdgeInsets.all(15),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextFormField(
+                    controller: bookCtr,
+                    decoration: InputDecoration(
+                        hintText: 'Kitap Adı', icon: Icon(Icons.book)),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Kitap Adı Boş Olamaz!';
+                      } else {
+                        return null;
+                      }
+                    }),
+                TextFormField(
+                    controller: authorCtr,
+                    decoration: InputDecoration(
+                        hintText: 'Yazar Adı', icon: Icon(Icons.edit)),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Bu alan Boş Olamaz!';
+                      } else {
+                        return null;
+                      }
+                    }),
+                TextFormField(
+                    onTap: () async {
+                      _selectedDate = await showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(-1000),
+                          lastDate: DateTime.now());
+                      if (_selectedDate != null) {
+                        publishCtr.text =
+                            Calculator.dateTimeToString(_selectedDate);
+                      }
+                    },
+                    controller: publishCtr,
+                    decoration: InputDecoration(
+                        hintText: 'Basım Yılı', icon: Icon(Icons.date_range)),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Lütfen Tarih Seçiniz!';
+                      } else {
+                        return null;
+                      }
+                    }),
+                SizedBox(
+                  height: 20,
+                ),
+                ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState != null &&
+                          _formKey.currentState!.validate()) {
+                        //Provider.of..... yerine context.read or watch
+                        await context.read<UpdateBookViewModel>().updateBook(
+                            bookName: bookCtr.text, authorName: authorCtr.text,publishDate: _selectedDate??Calculator.dateTimeFromTimeStamp(widget.book.publishDate),book: widget.book);
                         Navigator.pop(context);
-                      },
-                      child: Text("Güncelle"),
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
-                  ],
-                )
-              ]);
-            },
+                      }
+                    },
+                    child: Text("Güncelle"))
+              ],
+            ),
           ),
         ),
       ),
