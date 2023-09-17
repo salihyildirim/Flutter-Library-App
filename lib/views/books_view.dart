@@ -72,7 +72,7 @@ class _BooksViewState extends State<BooksView> {
                         // Map<String, dynamic> docData =
                         //     querySnap?[index].data() as Map<String, dynamic>;
 
-                        return Dismissible(
+                        return Dismissible( // dismissible yerine slidable yapılacak.
                           // confirmDismiss: (direction)async {
                           //   return false; // showalertDialog yapabilirsin.
                           // },
