@@ -22,7 +22,7 @@ class _BooksViewState extends State<BooksView> {
       create: (BuildContext context) {
         return BooksViewModel();
       },
-      builder: (context, child) => Scaffold(
+      builder: (context, child) => Scaffold(backgroundColor: Colors.white70,
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             Navigator.push(context,
@@ -30,10 +30,22 @@ class _BooksViewState extends State<BooksView> {
           },
           child: Icon(Icons.add),
         ),
-        appBar: AppBar(title: Text("Crud Islemleri"), centerTitle: true),
+        appBar: AppBar(title: const Text("Kitaplar"), centerTitle: true),
         body: Center(
           child: Column(
             children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Kitap Ara',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                ),
+              ),
               /*ElevatedButton(onPressed: () async{
                 var documentSnapshot= await hobbitRef.get();
                 Object? data =documentSnapshot.data();
@@ -53,15 +65,15 @@ class _BooksViewState extends State<BooksView> {
                       .getBookList(),
                   builder: (context, AsyncSnapshot async) {
                     if (async.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
+                      return const CircularProgressIndicator();
                     }
 
                     if (async.hasError) {
-                      return Text('Veri yüklenirken bir hata oluştu.');
+                      return const Text('Veri yüklenirken bir hata oluştu.');
                     }
 
                     if (!async.hasData || async.data == null) {
-                      return Text('Veri bulunamadı veya belge yok.');
+                      return const Text('Veri bulunamadı veya belge yok.');
                     }
 
                     List<Book> bookList = async.data;
@@ -72,16 +84,17 @@ class _BooksViewState extends State<BooksView> {
                         // Map<String, dynamic> docData =
                         //     querySnap?[index].data() as Map<String, dynamic>;
 
-                        return Dismissible( // dismissible yerine slidable yapılacak.
+                        return Dismissible(
+                          // dismissible yerine slidable yapılacak.
                           // confirmDismiss: (direction)async {
                           //   return false; // showalertDialog yapabilirsin.
                           // },
                           key: UniqueKey(),
                           direction: DismissDirection.horizontal,
                           background: Container(
-                            child: Icon(Icons.delete),
                             color: Colors.red,
                             alignment: Alignment.centerRight,
+                            child: const Icon(Icons.delete),
                           ),
                           onDismissed: (_) {
                             // querySnap[index].reference.update({'sene': FieldValue.delete()}); // dökümanın sadece bir alanini siler(sene).
@@ -97,8 +110,8 @@ class _BooksViewState extends State<BooksView> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                               UpdateBookView(book:bookList[index])));
+                                          builder: (context) => UpdateBookView(
+                                              book: bookList[index])));
                                 },
                               ),
                               subtitle: Text(bookList[index].bookName),
