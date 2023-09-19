@@ -22,7 +22,8 @@ class _BooksViewState extends State<BooksView> {
       create: (BuildContext context) {
         return BooksViewModel();
       },
-      builder: (context, child) => Scaffold(backgroundColor: Colors.white70,
+      builder: (context, child) => Scaffold(
+        backgroundColor: Colors.white70,
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             Navigator.push(context,
@@ -34,18 +35,6 @@ class _BooksViewState extends State<BooksView> {
         body: Center(
           child: Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  decoration: InputDecoration(
-                    hintText: 'Kitap Ara',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
-                ),
-              ),
               /*ElevatedButton(onPressed: () async{
                 var documentSnapshot= await hobbitRef.get();
                 Object? data =documentSnapshot.data();
@@ -59,73 +48,130 @@ class _BooksViewState extends State<BooksView> {
 
 
               }, child: Text("GET DATA"))*/
-              Flexible(
-                child: StreamBuilder<List<Book>>(
-                  stream: Provider.of<BooksViewModel>(context, listen: false)
-                      .getBookList(),
-                  builder: (context, AsyncSnapshot async) {
-                    if (async.connectionState == ConnectionState.waiting) {
-                      return const CircularProgressIndicator();
-                    }
+              StreamBuilder<List<Book>>(
+                stream: Provider.of<BooksViewModel>(context, listen: false)
+                    .getBookList(),
+                builder: (context, AsyncSnapshot async) {
+                  if (async.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
 
-                    if (async.hasError) {
-                      return const Text('Veri yüklenirken bir hata oluştu.');
-                    }
+                  if (async.hasError) {
+                    return const Text('Veri yüklenirken bir hata oluştu.');
+                  }
 
-                    if (!async.hasData || async.data == null) {
-                      return const Text('Veri bulunamadı veya belge yok.');
-                    }
+                  if (!async.hasData || async.data == null) {
+                    return const Text('Veri bulunamadı veya belge yok.');
+                  }
 
-                    List<Book> bookList = async.data;
+                  List<Book> bookList = async.data;
 
-                    return ListView.builder(
-                      itemCount: bookList.length,
-                      itemBuilder: (context, index) {
-                        // Map<String, dynamic> docData =
-                        //     querySnap?[index].data() as Map<String, dynamic>;
-
-                        return Dismissible(
-                          // dismissible yerine slidable yapılacak.
-                          // confirmDismiss: (direction)async {
-                          //   return false; // showalertDialog yapabilirsin.
-                          // },
-                          key: UniqueKey(),
-                          direction: DismissDirection.horizontal,
-                          background: Container(
-                            color: Colors.red,
-                            alignment: Alignment.centerRight,
-                            child: const Icon(Icons.delete),
-                          ),
-                          onDismissed: (_) {
-                            // querySnap[index].reference.update({'sene': FieldValue.delete()}); // dökümanın sadece bir alanini siler(sene).
-                            Provider.of<BooksViewModel>(context, listen: false)
-                                .deleteBook(bookList[index]);
-                          },
-                          child: Card(
-                            child: ListTile(
-                              title: Text(bookList[index].authorName),
-                              trailing: IconButton(
-                                icon: Icon(Icons.edit),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => UpdateBookView(
-                                              book: bookList[index])));
-                                },
-                              ),
-                              subtitle: Text(bookList[index].bookName),
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                  return BuildListView(bookList: bookList);
+                },
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class BuildListView extends StatefulWidget {
+  const BuildListView({
+    super.key,
+    required this.bookList,
+  });
+
+  final List<Book> bookList;
+
+  @override
+  State<BuildListView> createState() => _BuildListViewState();
+}
+
+class _BuildListViewState extends State<BuildListView> {
+  bool isFiltering = false;
+  late List<Book> filteredList;
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Flexible(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(6.0),
+            child: TextField(
+              decoration: InputDecoration(
+                prefixIcon: Icon(Icons.search),
+                hintText: 'Kitap Ara',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(6.0),
+                ),
+              ),
+              onChanged: (query) {
+                if(query.isNotEmpty){
+                  isFiltering=true;
+                  setState(() {
+                    filteredList = widget.bookList.where((book) => book.bookName.toLowerCase().contains(query.toLowerCase())).toList();
+                  });
+                }
+                else{
+                  WidgetsBinding.instance.focusManager.primaryFocus!.unfocus(); //klavye kendiliginden kapanmasi icin
+                  setState(() {
+                    isFiltering=false;
+                  });
+
+                }
+              },
+            ),
+          ),
+          Flexible(
+            child: ListView.builder(
+              itemCount: isFiltering? filteredList.length: widget.bookList.length,
+              itemBuilder: (context, index) {
+                // Map<String, dynamic> docData =
+                //     querySnap?[index].data() as Map<String, dynamic>;
+
+                var list = isFiltering?filteredList:widget.bookList;
+                return Dismissible(
+                  // dismissible yerine slidable yapılacak.
+                  // confirmDismiss: (direction)async {
+                  //   return false; // showalertDialog yapabilirsin.
+                  // },
+                  key: UniqueKey(),
+                  direction: DismissDirection.horizontal,
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    child: const Icon(Icons.delete),
+                  ),
+                  onDismissed: (_) {
+                    // querySnap[index].reference.update({'sene': FieldValue.delete()}); // dökümanın sadece bir alanini siler(sene).
+                    Provider.of<BooksViewModel>(context, listen: false)
+                        .deleteBook(widget.bookList[index]);
+                  },
+                  child: Card(
+                    child: ListTile(
+                      title: Text(list[index].bookName),
+                      trailing: IconButton(
+                        icon: Icon(Icons.edit),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => UpdateBookView(
+                                      book: widget.bookList[index])));
+                        },
+                      ),
+                      subtitle: Text(list[index].authorName),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
