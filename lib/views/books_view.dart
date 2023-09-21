@@ -1,4 +1,5 @@
 import 'package:firebase_firestore/views/add_book_view.dart';
+import 'package:firebase_firestore/views/barrow_book_view.dart';
 import 'package:firebase_firestore/views/books_view_model.dart';
 import 'package:firebase_firestore/views/update_book_view.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +96,6 @@ class _BuildListViewState extends State<BuildListView> {
 
   @override
   Widget build(BuildContext context) {
-
     return Flexible(
       child: Column(
         children: [
@@ -110,30 +110,34 @@ class _BuildListViewState extends State<BuildListView> {
                 ),
               ),
               onChanged: (query) {
-                if(query.isNotEmpty){
-                  isFiltering=true;
+                if (query.isNotEmpty) {
+                  isFiltering = true;
                   setState(() {
-                    filteredList = widget.bookList.where((book) => book.bookName.toLowerCase().contains(query.toLowerCase())).toList();
+                    filteredList = widget.bookList
+                        .where((book) => book.bookName
+                            .toLowerCase()
+                            .contains(query.toLowerCase()))
+                        .toList();
                   });
-                }
-                else{
-                  WidgetsBinding.instance.focusManager.primaryFocus!.unfocus(); //klavye kendiliginden kapanmasi icin
+                } else {
+                  WidgetsBinding.instance.focusManager.primaryFocus!
+                      .unfocus(); //klavye kendiliginden kapanmasi icin
                   setState(() {
-                    isFiltering=false;
+                    isFiltering = false;
                   });
-
                 }
               },
             ),
           ),
           Flexible(
             child: ListView.builder(
-              itemCount: isFiltering? filteredList.length: widget.bookList.length,
+              itemCount:
+                  isFiltering ? filteredList.length : widget.bookList.length,
               itemBuilder: (context, index) {
                 // Map<String, dynamic> docData =
                 //     querySnap?[index].data() as Map<String, dynamic>;
 
-                var list = isFiltering?filteredList:widget.bookList;
+                var list = isFiltering ? filteredList : widget.bookList;
                 return Dismissible(
                   // dismissible yerine slidable yapılacak.
                   // confirmDismiss: (direction)async {
@@ -153,9 +157,23 @@ class _BuildListViewState extends State<BuildListView> {
                   },
                   child: Card(
                     child: ListTile(
+                      leading: IconButton(
+                        icon: const Icon(Icons.person_add_alt_1,semanticLabel: 'Ödünç Kayıt Ekle'),
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => BarrowBookView()));
+                        },
+                        color: Colors.black,
+                        style: ButtonStyle(
+                          iconSize: MaterialStateProperty.all(24),
+                          // Arka plan rengini burada belirleyin
+                        ),
+                      ),
                       title: Text(list[index].bookName),
                       trailing: IconButton(
-                        icon: Icon(Icons.edit),
+                        icon: const Icon(Icons.edit, size: 24),
                         onPressed: () {
                           Navigator.push(
                               context,
