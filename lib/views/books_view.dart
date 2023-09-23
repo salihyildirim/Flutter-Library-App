@@ -24,7 +24,7 @@ class _BooksViewState extends State<BooksView> {
         return BooksViewModel();
       },
       builder: (context, child) => Scaffold(
-        backgroundColor: Colors.white70,
+        backgroundColor: Colors.white,
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             Navigator.push(context,
@@ -163,7 +163,7 @@ class _BuildListViewState extends State<BuildListView> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => BarrowBookView()));
+                                  builder: (context) => BarrowBookView(widget.bookList[index])));
                         },
                         color: Colors.black,
                         style: ButtonStyle(
