@@ -58,7 +58,7 @@ class _BooksViewState extends State<BooksView> {
                   }
 
                   if (async.hasError) {
-                    return const Text('Veri yüklenirken bir hata oluştu.');
+                    return Text('${async.error.toString()}');
                   }
 
                   if (!async.hasData || async.data == null) {
@@ -96,6 +96,7 @@ class _BuildListViewState extends State<BuildListView> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.bookList.first.borrows.first.name);
     return Flexible(
       child: Column(
         children: [

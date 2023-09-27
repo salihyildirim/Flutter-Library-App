@@ -3,11 +3,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'borrow_model.dart';
 
 class Book {
-  final String id;
-  final String bookName;
-  final String authorName;
-  final Timestamp publishDate;
-  final List<BorrowInfo> borrows;
+   String id;
+   String bookName;
+   String authorName;
+   Timestamp publishDate;
+  List<BorrowInfo> borrows;
 
   Book({
     required this.id,
@@ -16,6 +16,7 @@ class Book {
     required this.publishDate,
     required this.borrows,
   });
+
 
   Map<String, dynamic> toMap() {
     List<Map<String, dynamic>> borrows =
