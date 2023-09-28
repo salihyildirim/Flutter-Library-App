@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class BorrowInfo {
   final String name;
   final String surname;
-  final String photoUrl;
+  final String? photoUrl;
   final Timestamp borrowDate;
   final Timestamp returnDate;
 

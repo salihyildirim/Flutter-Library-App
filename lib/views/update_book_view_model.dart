@@ -29,6 +29,7 @@ class UpdateBookViewModel extends ChangeNotifier {
     );
 
     /// Bu kitap bilgisini database servisi üzerinden Firestore'a yazacak.
-    await _database.setBookData(collectionPath, newBook.toMap());
+    await _database.setBookData(
+        collectionPath: collectionPath, book: newBook.toMap());
   }
 }

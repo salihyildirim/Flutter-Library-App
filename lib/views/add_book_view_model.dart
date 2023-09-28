@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import '../models/book_model.dart';
 
 class AddBookViewModel extends ChangeNotifier {
-  String collectionPath='books';
+  String collectionPath = 'books';
   Database _database = Database();
 
   Future<void> addNewBook(
@@ -17,9 +17,11 @@ class AddBookViewModel extends ChangeNotifier {
         id: DateTime.now().toIso8601String(),
         authorName: authorName,
         bookName: bookName,
-        publishDate: Calculator.dateTimeToTimeStamp(publishDate), borrows: []);
+        publishDate: Calculator.dateTimeToTimeStamp(publishDate),
+        borrows: []);
 
     /// Bu kitap bilgisini database servisi üzerinden Firestore'a yazacak.
-    await _database.setBookData(collectionPath, newBook.toMap());
+    await _database.setBookData(
+        collectionPath: collectionPath, book: newBook.toMap());
   }
 }

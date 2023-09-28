@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../models/book_model.dart';
 import '../models/borrow_model.dart';
+import '../services/calculator.dart';
+import 'borrow_book_view_model.dart';
 
 class BarrowBookView extends StatefulWidget {
   final Book book;
@@ -45,7 +47,7 @@ class _BarrowBookViewState extends State<BarrowBookView> {
                       await showModalBottomSheet<BorrowInfo>(
                           context: context,
                           builder: (BuildContext context) {
-                            return BorrowForm();
+                            return BorrowForm(widget.book);
                           });
                 },
                 child: Container(
@@ -65,18 +67,22 @@ class _BarrowBookViewState extends State<BarrowBookView> {
 }
 
 class BorrowForm extends StatefulWidget {
-  const BorrowForm({super.key});
+  Book book;
+
+  BorrowForm(this.book, {super.key});
 
   @override
   State<BorrowForm> createState() => _BorrowFormState();
 }
 
 class _BorrowFormState extends State<BorrowForm> {
-  TextEditingController nameCtr= TextEditingController();
-  TextEditingController surnameCtr= TextEditingController();
-  TextEditingController borrowDateCtr= TextEditingController();
-  TextEditingController returnDateCtr= TextEditingController();
-
+  TextEditingController nameCtr = TextEditingController();
+  TextEditingController surnameCtr = TextEditingController();
+  TextEditingController borrowDateCtr = TextEditingController();
+  TextEditingController returnDateCtr = TextEditingController();
+  BarrowBookViewModel barrowBookViewModel = BarrowBookViewModel();
+  var _selectedBorrowDate;
+  var _selectedReturnDate;
 
   @override
   Widget build(BuildContext context) {
@@ -87,29 +93,59 @@ class _BorrowFormState extends State<BorrowForm> {
         child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: NetworkImage('https://i.hizliresim.com/p61ovs2.jpg'),
-                    ),
-                    Positioned(
-                        bottom: -5,
-                        right: -10,
-                        child: IconButton(
-                          icon: Icon(Icons.photo_camera_rounded),
-                          onPressed: () {},
-                        ))
-                  ],
-                ),TextFormField(controller: nameCtr,decoration: InputDecoration(hintText: 'Ad',),validator: (value){
-                  if(value == null ||value.isEmpty){
-                    return 'Ad Giriniz';
-                  }
-                  else{
-                    return null;
-                  }
-                },),
+                Flexible(
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundImage: NetworkImage(
+                            'https://i.hizliresim.com/p61ovs2.jpg'),
+                      ),
+                      Positioned(
+                          bottom: -5,
+                          right: -10,
+                          child: IconButton(
+                            icon: Icon(Icons.photo_camera_rounded),
+                            onPressed: () {},
+                          ))
+                    ],
+                  ),
+                ),
+                Flexible(
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: nameCtr,
+                        decoration: InputDecoration(
+                          hintText: 'Ad',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Ad Giriniz';
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
+                      TextFormField(
+                        controller: surnameCtr,
+                        decoration: InputDecoration(
+                          hintText: 'Soyad',
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Soyad Giriniz';
+                          } else {
+                            return null;
+                          }
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+
                 // TextFormField(controller: nameCtr,decoration: InputDecoration(hintText: 'Ad',),validator: (value){
                 //   if(value == null ||value.isEmpty){
                 //     return 'Ad Giriniz';
@@ -135,8 +171,76 @@ class _BorrowFormState extends State<BorrowForm> {
                 //   }
                 // },)
               ],
+            ),
+            Row(
+              children: [
+                Flexible(
+                  child: TextFormField(
+                      onTap: () async {
+                        _selectedBorrowDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(-1000),
+                            lastDate: DateTime.now());
+                        if (_selectedBorrowDate != null) {
+                          borrowDateCtr.text =
+                              Calculator.dateTimeToString(_selectedBorrowDate);
+                        }
+                      },
+                      controller: borrowDateCtr,
+                      decoration: InputDecoration(
+                        hintText: 'Ödünç Tarihi',
+                        icon: Icon(Icons.date_range),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Lütfen Tarih Seçiniz!';
+                        } else {
+                          return null;
+                        }
+                      }),
+                ),
+                Flexible(
+                  child: TextFormField(
+                      onTap: () async {
+                        _selectedReturnDate = await showDatePicker(
+                            context: context,
+                            initialDate: DateTime.now(),
+                            firstDate: DateTime(-1000),
+                            lastDate: DateTime.now());
+                        if (_selectedReturnDate != null) {
+                          returnDateCtr.text =
+                              Calculator.dateTimeToString(_selectedReturnDate);
+                        }
+                      },
+                      controller: returnDateCtr,
+                      decoration: InputDecoration(
+                          hintText: 'İade Tarihi',
+                          icon: Icon(Icons.date_range)),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Lütfen Tarih Seçiniz!';
+                        } else {
+                          return null;
+                        }
+                      }),
+                ),
+              ],
+            ),
+            ElevatedButton(
+              child: Text('ÖDÜNÇ KAYIT EKLE'),
+              onPressed: () {
+                BorrowInfo newBorrowInfo = BorrowInfo(
+                    name: nameCtr.text,
+                    surname: surnameCtr.text,
+                    photoUrl: null,
+                    borrowDate: Calculator.dateTimeToTimeStamp(_selectedBorrowDate),
+                    returnDate: Calculator.dateTimeToTimeStamp(_selectedReturnDate));
+                widget.book.borrows.add(newBorrowInfo);
+                barrowBookViewModel.updateBook(borrowList: widget.book.borrows, book: widget.book);
+                Navigator.pop(context,newBorrowInfo);
+              },
             )
-
           ],
         ),
       ),
