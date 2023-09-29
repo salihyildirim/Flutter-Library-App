@@ -1,9 +1,10 @@
 import 'package:firebase_firestore/services/database.dart';
+import 'package:flutter/material.dart';
 
 import '../models/book_model.dart';
 import '../models/borrow_model.dart';
 
-class BarrowBookViewModel {
+class BarrowBookViewModel with ChangeNotifier{
   Database _database = Database();
   String collectionPath = 'books';
 

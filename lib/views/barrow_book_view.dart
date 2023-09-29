@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/book_model.dart';
 import '../models/borrow_model.dart';
@@ -18,58 +19,62 @@ class _BarrowBookViewState extends State<BarrowBookView> {
   @override
   Widget build(BuildContext context) {
     List<BorrowInfo> borrowList = widget.book.borrows;
-    return Scaffold(
-        appBar: AppBar(
-            title: Text('${widget.book.bookName.toUpperCase()} Ödünç Listesi'),
-            centerTitle: true),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Flexible(
-              child: ListView.separated(
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      leading: CircleAvatar(
-                        radius: 25,
-                        //backgroundImage: NetworkImage(''),
-                      ),
-                      title: Text(
-                          '${borrowList[index].name} ${borrowList[index].surname}'),
-                    );
-                  },
-                  separatorBuilder: (context, _) => Divider(),
-                  itemCount: borrowList.length),
-            ),
-            Flexible(
-              child: InkWell(
-                onTap: () async {
-                  BorrowInfo? newBorrowInfo =
-                      await showModalBottomSheet<BorrowInfo>(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return BorrowForm(widget.book);
-                          });
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Yeni Ödünç',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                  height: 80,
-                  color: Colors.blueAccent,
-                ),
+    return ChangeNotifierProvider<BarrowBookViewModel>( create: (context)=> BarrowBookViewModel(),
+      builder: (context,_)=> Scaffold(
+          appBar: AppBar(
+              title: Text('${widget.book.bookName.toUpperCase()} Ödünç Listesi'),
+              centerTitle: true),
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                child: ListView.separated(
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        leading: CircleAvatar(
+                          radius: 25,
+                          //backgroundImage: NetworkImage(''),
+                        ),
+                        title: Text(
+                            '${borrowList[index].name} ${borrowList[index].surname}'),
+                      );
+                    },
+                    separatorBuilder: (context, _) => Divider(),
+                    itemCount: borrowList.length),
               ),
-            )
-          ],
-        ));
+              Flexible(
+                  child: InkWell(
+                      onTap: () async {
+                        BorrowInfo? newBorrowInfo =
+                            await showModalBottomSheet<BorrowInfo>(
+                                builder: (BuildContext context) {
+                                  return BorrowForm();
+                                },
+                                context: context);
+                        if (newBorrowInfo != null) {
+                          setState(() {
+                            borrowList.add(newBorrowInfo);
+                          });
+                          context.read<BarrowBookViewModel>().updateBook(
+                              book: widget.book, borrowList: borrowList);
+                        }
+                      },
+                      child: Container(
+                          alignment: Alignment.center,
+                          height: 80,
+                          color: Colors.blueAccent,
+                          child: Text(
+                            'YENİ ÖDÜNÇ',
+                            style: TextStyle(fontSize: 18, color: Colors.white),
+                          ))))
+            ],
+          )),
+    );
   }
 }
 
 class BorrowForm extends StatefulWidget {
-  Book book;
-
-  BorrowForm(this.book, {super.key});
+  const BorrowForm({super.key});
 
   @override
   State<BorrowForm> createState() => _BorrowFormState();
@@ -207,7 +212,7 @@ class _BorrowFormState extends State<BorrowForm> {
                             context: context,
                             initialDate: DateTime.now(),
                             firstDate: DateTime(-1000),
-                            lastDate: DateTime.now());
+                            lastDate: DateTime.now().add(Duration(days: 365)));
                         if (_selectedReturnDate != null) {
                           returnDateCtr.text =
                               Calculator.dateTimeToString(_selectedReturnDate);
@@ -234,11 +239,14 @@ class _BorrowFormState extends State<BorrowForm> {
                     name: nameCtr.text,
                     surname: surnameCtr.text,
                     photoUrl: null,
-                    borrowDate: Calculator.dateTimeToTimeStamp(_selectedBorrowDate),
-                    returnDate: Calculator.dateTimeToTimeStamp(_selectedReturnDate));
-                widget.book.borrows.add(newBorrowInfo);
-                barrowBookViewModel.updateBook(borrowList: widget.book.borrows, book: widget.book);
-                Navigator.pop(context,newBorrowInfo);
+                    borrowDate:
+                        Calculator.dateTimeToTimeStamp(_selectedBorrowDate),
+                    returnDate:
+                        Calculator.dateTimeToTimeStamp(_selectedReturnDate));
+                // widget.book.borrows.add(newBorrowInfo);
+                // barrowBookViewModel.updateBook(
+                //     borrowList: widget.book.borrows, book: widget.book);
+                Navigator.pop(context, newBorrowInfo);
               },
             )
           ],
