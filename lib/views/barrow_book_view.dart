@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,10 +20,20 @@ class _BarrowBookViewState extends State<BarrowBookView> {
   @override
   Widget build(BuildContext context) {
     List<BorrowInfo> borrowList = widget.book.borrows;
-    return ChangeNotifierProvider<BarrowBookViewModel>( create: (context)=> BarrowBookViewModel(),
-      builder: (context,_)=> Scaffold(
+    return ChangeNotifierProvider<BarrowBookViewModel>(
+      create: (context) => BarrowBookViewModel(),
+      builder: (context, _) => Scaffold(
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              Reference _refStorage = FirebaseStorage.instance.ref();
+              Reference? refPhotos = _refStorage.child('photos');
+              var photoUrl = await refPhotos.child('01.jpg').getDownloadURL();
+              print(photoUrl);
+            },
+          ),
           appBar: AppBar(
-              title: Text('${widget.book.bookName.toUpperCase()} Ödünç Listesi'),
+              title:
+                  Text('${widget.book.bookName.toUpperCase()} Ödünç Listesi'),
               centerTitle: true),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -33,7 +44,8 @@ class _BarrowBookViewState extends State<BarrowBookView> {
                       return ListTile(
                         leading: CircleAvatar(
                           radius: 25,
-                          //backgroundImage: NetworkImage(''),
+                          backgroundImage:
+                              NetworkImage(borrowList[index].photoUrl ?? 'https://i.hizliresim.com/p61ovs2.jpg'),
                         ),
                         title: Text(
                             '${borrowList[index].name} ${borrowList[index].surname}'),
@@ -232,17 +244,21 @@ class _BorrowFormState extends State<BorrowForm> {
                 ),
               ],
             ),
+            SizedBox(
+              height: 50,
+            ),
             ElevatedButton(
               child: Text('ÖDÜNÇ KAYIT EKLE'),
               onPressed: () {
                 BorrowInfo newBorrowInfo = BorrowInfo(
-                    name: nameCtr.text,
-                    surname: surnameCtr.text,
-                    photoUrl: null,
-                    borrowDate:
-                        Calculator.dateTimeToTimeStamp(_selectedBorrowDate),
-                    returnDate:
-                        Calculator.dateTimeToTimeStamp(_selectedReturnDate));
+                  name: nameCtr.text,
+                  surname: surnameCtr.text,
+                  photoUrl: null,
+                  borrowDate:
+                      Calculator.dateTimeToTimeStamp(_selectedBorrowDate),
+                  returnDate:
+                      Calculator.dateTimeToTimeStamp(_selectedReturnDate),
+                );
                 // widget.book.borrows.add(newBorrowInfo);
                 // barrowBookViewModel.updateBook(
                 //     borrowList: widget.book.borrows, book: widget.book);
