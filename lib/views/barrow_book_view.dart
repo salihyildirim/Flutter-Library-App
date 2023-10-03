@@ -106,6 +106,22 @@ class _BorrowFormState extends State<BorrowForm> {
   var _selectedBorrowDate;
   var _selectedReturnDate;
 
+  XFile? _image;
+  XFile? _pickedFile;
+  final picker= ImagePicker();
+
+  Future getImage() async {
+    _pickedFile = await picker.pickImage(source: ImageSource.camera);
+    setState(() {
+      if(_pickedFile!=null){
+        _image=XFile(_pickedFile!.path);
+      }
+      else{
+        print('No Image Selected.');
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -120,17 +136,23 @@ class _BorrowFormState extends State<BorrowForm> {
                 Flexible(
                   child: Stack(
                     children: [
-                      CircleAvatar(
-                        radius: 40,
-                        backgroundImage: NetworkImage(
-                            'https://i.hizliresim.com/p61ovs2.jpg'),
+                    CircleAvatar(
+                    radius: 40,
+                    // child: (_image == null)
+                    //     ? Image(image: NetworkImage('https://i.hizliresim.com/p61ovs2.jpg'))
+                    //     : Image.file(File(_image!.path)),
+                        backgroundImage: (_image == null)
+                            ? NetworkImage('https://i.hizliresim.com/p61ovs2.jpg')
+                            : FileImage(File(_image!.path)) as ImageProvider<Object>?,
                       ),
+
+
                       Positioned(
                           bottom: -5,
                           right: -10,
                           child: IconButton(
                             icon: Icon(Icons.photo_camera_rounded),
-                            onPressed: () {},
+                            onPressed: getImage,
                           ))
                     ],
                   ),
