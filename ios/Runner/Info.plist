@@ -14,6 +14,12 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>firebase_firestore</string>
+	<key>NSCameraUsageDescription</key>
+    <string>Kamerayı kullanmak için izin verilmesi gerekiyor çünkü profil fotoğrafı çekeceğiz.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Fotoğraf galerisine erişim gerekiyor çünkü profil fotoğrafı seçeceğiz.</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Mikrofonu kullanmak için izin verilmesi gerekiyor çünkü sesli komutları kaydedeceğiz.</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>

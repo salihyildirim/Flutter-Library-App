@@ -1,10 +1,14 @@
+import 'dart:io';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_firestore/views/add_book_view.dart';
 import 'package:firebase_firestore/views/barrow_book_view.dart';
 import 'package:firebase_firestore/views/books_view_model.dart';
 import 'package:firebase_firestore/views/update_book_view.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
-
 import '../models/book_model.dart';
 
 class BooksView extends StatefulWidget {
@@ -15,6 +19,35 @@ class BooksView extends StatefulWidget {
 }
 
 class _BooksViewState extends State<BooksView> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    checkInternetOnStart();
+  }
+
+  Future<bool> checkInternetConnection() async {
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    return connectivityResult != ConnectivityResult.none;
+  }
+
+  Future<void> checkInternetOnStart() async {
+    if (!(await checkInternetConnection())) {
+      // Kullanıcının interneti yoksa uyarı göster
+      showNoInternetAlert();
+    }
+  }
+
+  void showNoInternetAlert() {
+    Fluttertoast.showToast(
+      msg: "İnternet bağlantısı yok!",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // final DocumentReference hobbitRef = kitaplarRef.doc('Hobbit');
@@ -159,12 +192,14 @@ class _BuildListViewState extends State<BuildListView> {
                   child: Card(
                     child: ListTile(
                       leading: IconButton(
-                        icon: const Icon(Icons.person_add_alt_1,semanticLabel: 'Ödünç Kayıt Ekle'),
+                        icon: const Icon(Icons.person_add_alt_1,
+                            semanticLabel: 'Ödünç Kayıt Ekle'),
                         onPressed: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => BarrowBookView(widget.bookList[index])));
+                                  builder: (context) =>
+                                      BarrowBookView(widget.bookList[index])));
                         },
                         color: Colors.black,
                         style: ButtonStyle(

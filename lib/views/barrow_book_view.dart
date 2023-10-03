@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 import '../models/book_model.dart';
@@ -38,14 +41,16 @@ class _BarrowBookViewState extends State<BarrowBookView> {
           body: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+
               Flexible(
                 child: ListView.separated(
                     itemBuilder: (context, index) {
                       return ListTile(
                         leading: CircleAvatar(
                           radius: 25,
-                          backgroundImage:
-                              NetworkImage(borrowList[index].photoUrl ?? 'https://i.hizliresim.com/p61ovs2.jpg'),
+                          backgroundImage: NetworkImage(
+                              borrowList[index].photoUrl ??
+                                  'https://i.hizliresim.com/p61ovs2.jpg'),
                         ),
                         title: Text(
                             '${borrowList[index].name} ${borrowList[index].surname}'),
