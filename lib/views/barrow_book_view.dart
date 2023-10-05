@@ -111,15 +111,31 @@ class _BorrowFormState extends State<BorrowForm> {
   final picker= ImagePicker();
 
   Future getImage() async {
-    _pickedFile = await picker.pickImage(source: ImageSource.camera);
+    _pickedFile = await picker.pickImage(source: ImageSource.gallery);
     setState(() {
       if(_pickedFile!=null){
         _image=XFile(_pickedFile!.path);
+        uploadImageToStorage(_image!);
       }
       else{
         print('No Image Selected.');
       }
     });
+  }
+
+  Future<void> uploadImageToStorage(XFile imageFile)async{
+    ///Storage üzerindeki dosya adını olustur.
+    String path='${DateTime.now().microsecondsSinceEpoch}.jpg';
+    ///dosyayı gonder
+    final storageRef =FirebaseStorage.instance.ref();
+    final photosRef = storageRef.child("photos");
+    File file = File(_image!.path); // XFile convert to File.
+    TaskSnapshot uploadTask= await photosRef.child(path).putFile(file);
+    
+    String uploadedImageUrl =await uploadTask.ref.getDownloadURL();
+    print("--------------------> $uploadedImageUrl");
+
+
   }
 
   @override
