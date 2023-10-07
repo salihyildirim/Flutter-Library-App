@@ -140,7 +140,7 @@ class _BorrowFormState extends State<BorrowForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Container( //resim duzenlenecek
       padding: EdgeInsets.all(14),
       child: Form(
         key: GlobalKey<FormState>(),
