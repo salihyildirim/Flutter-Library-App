@@ -26,14 +26,6 @@ class _BarrowBookViewState extends State<BarrowBookView> {
     return ChangeNotifierProvider<BarrowBookViewModel>(
       create: (context) => BarrowBookViewModel(),
       builder: (context, _) => Scaffold(
-          floatingActionButton: FloatingActionButton(
-            onPressed: () async {
-              Reference _refStorage = FirebaseStorage.instance.ref();
-              Reference? refPhotos = _refStorage.child('photos');
-              var photoUrl = await refPhotos.child('01.jpg').getDownloadURL();
-              print(photoUrl);
-            },
-          ),
           appBar: AppBar(
               title:
                   Text('${widget.book.bookName.toUpperCase()} Ödünç Listesi'),
@@ -105,17 +97,18 @@ class _BorrowFormState extends State<BorrowForm> {
   BarrowBookViewModel barrowBookViewModel = BarrowBookViewModel();
   var _selectedBorrowDate;
   var _selectedReturnDate;
+  String? photoUrl;
 
   XFile? _image;
   XFile? _pickedFile;
   final picker= ImagePicker();
 
   Future getImage() async {
-    _pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    setState(() {
+    _pickedFile = await picker.pickImage(source: ImageSource.camera,imageQuality: 50); // image quality duserek storage icerisinde az yer kaplattik.
+    setState(() async{
       if(_pickedFile!=null){
         _image=XFile(_pickedFile!.path);
-        uploadImageToStorage(_image!);
+        photoUrl= await uploadImageToStorage(_image!);
       }
       else{
         print('No Image Selected.');
@@ -123,24 +116,24 @@ class _BorrowFormState extends State<BorrowForm> {
     });
   }
 
-  Future<void> uploadImageToStorage(XFile imageFile)async{
+  Future<String> uploadImageToStorage(XFile imageFile)async{
     ///Storage üzerindeki dosya adını olustur.
-    String path='${DateTime.now().microsecondsSinceEpoch}.jpg';
+    String photoPath='${DateTime.now().microsecondsSinceEpoch}.jpg';
     ///dosyayı gonder
     final storageRef =FirebaseStorage.instance.ref();
     final photosRef = storageRef.child("photos");
-    File file = File(_image!.path); // XFile convert to File.
-    TaskSnapshot uploadTask= await photosRef.child(path).putFile(file);
+    File file = File(imageFile.path); // XFile convert to File.
+    TaskSnapshot uploadTask= await photosRef.child(photoPath).putFile(file);
     
     String uploadedImageUrl =await uploadTask.ref.getDownloadURL();
-    print("--------------------> $uploadedImageUrl");
+    return uploadedImageUrl;
 
 
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container( //resim duzenlenecek
+    return Container(
       padding: EdgeInsets.all(14),
       child: Form(
         key: GlobalKey<FormState>(),
@@ -296,7 +289,7 @@ class _BorrowFormState extends State<BorrowForm> {
                 BorrowInfo newBorrowInfo = BorrowInfo(
                   name: nameCtr.text,
                   surname: surnameCtr.text,
-                  photoUrl: null,
+                  photoUrl: photoUrl,
                   borrowDate:
                       Calculator.dateTimeToTimeStamp(_selectedBorrowDate),
                   returnDate:

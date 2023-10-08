@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_firestore/views/add_book_view.dart';
@@ -7,7 +6,6 @@ import 'package:firebase_firestore/views/books_view_model.dart';
 import 'package:firebase_firestore/views/update_book_view.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../models/book_model.dart';
 
@@ -100,7 +98,13 @@ class _BooksViewState extends State<BooksView> {
 
                   List<Book> bookList = async.data;
 
-                  return BuildListView(bookList: bookList);
+                  return bookList.isEmpty
+                      ? Container(
+                    child: Center(
+                      child: Text('Liste Boş',style: TextStyle(fontSize: 18,color: Colors.deepOrange)),
+                    ),
+                  )
+                      : BuildListView(bookList: bookList);
                 },
               ),
             ],
@@ -129,7 +133,6 @@ class _BuildListViewState extends State<BuildListView> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.bookList.first.borrows.first.name);
     return Flexible(
       child: Column(
         children: [
@@ -172,6 +175,11 @@ class _BuildListViewState extends State<BuildListView> {
                 //     querySnap?[index].data() as Map<String, dynamic>;
 
                 var list = isFiltering ? filteredList : widget.bookList;
+                if (list.isEmpty) {
+                  return Center(
+                    child: Text('Liste Boş'),
+                  );
+                }
                 return Dismissible(
                   // dismissible yerine slidable yapılacak.
                   // confirmDismiss: (direction)async {
@@ -204,7 +212,7 @@ class _BuildListViewState extends State<BuildListView> {
                         color: Colors.black,
                         style: ButtonStyle(
                           iconSize: MaterialStateProperty.all(24),
-                          // Arka plan rengini burada belirleyin
+                          // Arka plan rengini burada belirle.
                         ),
                       ),
                       title: Text(list[index].bookName),
