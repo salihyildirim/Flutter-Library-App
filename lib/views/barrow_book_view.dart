@@ -33,7 +33,6 @@ class _BarrowBookViewState extends State<BarrowBookView> {
           body: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-
               Flexible(
                 child: ListView.separated(
                     itemBuilder: (context, index) {
@@ -53,19 +52,27 @@ class _BarrowBookViewState extends State<BarrowBookView> {
               ),
               Flexible(
                   child: InkWell(
+                      //ALTTAKI MAVI YENI ODUNC BUTONU
                       onTap: () async {
-                        BorrowInfo? newBorrowInfo =
-                            await showModalBottomSheet<BorrowInfo>(
-                                builder: (BuildContext context) {
-                                  return BorrowForm();
-                                },
-                                context: context);
+                        BorrowInfo? newBorrowInfo = await showModalBottomSheet<
+                                BorrowInfo>(enableDrag: false,isDismissible: false,
+                            context: context,
+                            // MODALBOTTOMSHEET EGER BEKLENMEDIK SEKILDE KAPATILIRSA
+                            // BORROWINFO NULL DONECEK CUNKU BORROWINFO ATAMASINI ONPRESS DE YAPIYORUZ VE POP EDIYORUZ. BU ŞEKİLDE KT EDEBİLİRSİN.
+                            builder: (BuildContext context) {
+                              return WillPopScope(onWillPop: ()async { return false; },
+                              child: BorrowForm());
+                            });
+                        print("modalBottomSheet Donen BorrowInfoDegeri : $newBorrowInfo");
                         if (newBorrowInfo != null) {
                           setState(() {
                             borrowList.add(newBorrowInfo);
                           });
                           context.read<BarrowBookViewModel>().updateBook(
                               book: widget.book, borrowList: borrowList);
+                        }
+                        else if(newBorrowInfo==null){
+                          //store'dan fotoyu sil.
                         }
                       },
                       child: Container(
@@ -97,38 +104,43 @@ class _BorrowFormState extends State<BorrowForm> {
   BarrowBookViewModel barrowBookViewModel = BarrowBookViewModel();
   var _selectedBorrowDate;
   var _selectedReturnDate;
-  String? photoUrl;
+  String? photoUrl = 'https://i.hizliresim.com/p61ovs2.jpg';
 
   XFile? _image;
   XFile? _pickedFile;
-  final picker= ImagePicker();
+  final picker = ImagePicker();
 
-  Future getImage() async {
-    _pickedFile = await picker.pickImage(source: ImageSource.camera,imageQuality: 50); // image quality duserek storage icerisinde az yer kaplattik.
-    setState(() async{
-      if(_pickedFile!=null){
-        _image=XFile(_pickedFile!.path);
-        photoUrl= await uploadImageToStorage(_image!);
-      }
-      else{
+  Future<void> getImage() async {
+    _pickedFile = await picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality:
+            50); // image quality duserek storage icerisinde az yer kaplattik.
+
+    setState(() {
+      if (_pickedFile != null) {
+        _image = XFile(_pickedFile!.path); //XFILE TO FILE
+      } else {
         print('No Image Selected.');
       }
     });
+    if (_pickedFile != null) {
+      photoUrl = await uploadImageToStorage(
+          _image!); //UPLOADING TO STORAGE PHOTO TAKEN
+    }
   }
 
-  Future<String> uploadImageToStorage(XFile imageFile)async{
+  Future<String> uploadImageToStorage(XFile imageFile) async {
     ///Storage üzerindeki dosya adını olustur.
-    String photoPath='${DateTime.now().microsecondsSinceEpoch}.jpg';
+    String photoPath = '${DateTime.now().microsecondsSinceEpoch}.jpg';
+
     ///dosyayı gonder
-    final storageRef =FirebaseStorage.instance.ref();
+    final storageRef = FirebaseStorage.instance.ref();
     final photosRef = storageRef.child("photos");
     File file = File(imageFile.path); // XFile convert to File.
-    TaskSnapshot uploadTask= await photosRef.child(photoPath).putFile(file);
-    
-    String uploadedImageUrl =await uploadTask.ref.getDownloadURL();
+    TaskSnapshot uploadTask = await photosRef.child(photoPath).putFile(file);
+
+    String uploadedImageUrl = await uploadTask.ref.getDownloadURL();
     return uploadedImageUrl;
-
-
   }
 
   @override
@@ -145,17 +157,17 @@ class _BorrowFormState extends State<BorrowForm> {
                 Flexible(
                   child: Stack(
                     children: [
-                    CircleAvatar(
-                    radius: 40,
-                    // child: (_image == null)
-                    //     ? Image(image: NetworkImage('https://i.hizliresim.com/p61ovs2.jpg'))
-                    //     : Image.file(File(_image!.path)),
+                      CircleAvatar(
+                        radius: 40,
+                        // child: (_image == null)
+                        //     ? Image(image: NetworkImage('https://i.hizliresim.com/p61ovs2.jpg'))
+                        //     : Image.file(File(_image!.path)),
                         backgroundImage: (_image == null)
-                            ? NetworkImage('https://i.hizliresim.com/p61ovs2.jpg')
-                            : FileImage(File(_image!.path)) as ImageProvider<Object>?,
+                            ? NetworkImage(
+                                'https://i.hizliresim.com/p61ovs2.jpg')
+                            : FileImage(File(_image!.path))
+                                as ImageProvider<Object>?,
                       ),
-
-
                       Positioned(
                           bottom: -5,
                           right: -10,
@@ -283,23 +295,36 @@ class _BorrowFormState extends State<BorrowForm> {
             SizedBox(
               height: 50,
             ),
-            ElevatedButton(
-              child: Text('ÖDÜNÇ KAYIT EKLE'),
-              onPressed: () {
-                BorrowInfo newBorrowInfo = BorrowInfo(
-                  name: nameCtr.text,
-                  surname: surnameCtr.text,
-                  photoUrl: photoUrl,
-                  borrowDate:
-                      Calculator.dateTimeToTimeStamp(_selectedBorrowDate),
-                  returnDate:
-                      Calculator.dateTimeToTimeStamp(_selectedReturnDate),
-                );
-                // widget.book.borrows.add(newBorrowInfo);
-                // barrowBookViewModel.updateBook(
-                //     borrowList: widget.book.borrows, book: widget.book);
-                Navigator.pop(context, newBorrowInfo);
-              },
+            Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                ElevatedButton(
+                  child: Text('ÖDÜNÇ KAYIT EKLE'),
+                  onPressed: () async {
+                    BorrowInfo newBorrowInfo = BorrowInfo(
+                      name: nameCtr.text,
+                      surname: surnameCtr.text,
+                      photoUrl: photoUrl,
+                      borrowDate:
+                          Calculator.dateTimeToTimeStamp(_selectedBorrowDate),
+                      returnDate:
+                          Calculator.dateTimeToTimeStamp(_selectedReturnDate),
+                    );
+                    // widget.book.borrows.add(newBorrowInfo);
+                    // barrowBookViewModel.updateBook(
+                    //     borrowList: widget.book.borrows, book: widget.book);
+                    Navigator.pop(context, newBorrowInfo);
+                    /* if (_pickedFile != null) {
+                      photoUrl = await uploadImageToStorage(
+                          _image!); //UPLOADING TO STORAGE PHOTO TAKEN. KAYIT EKLE BUTONUNA BASTIKTAN SONRA STORAGE'A KAYDETMEK BU ŞEKİLDE DAHA MANTIKLI.
+                          //FAKAT FOTOĞRAFI ÇEKER ÇEKMEZ KAYDEDECEĞİM VE BOTTOMMODELSHEET KAPATILIRSA VEYA HATA VS. DURUMLARINDA STORAGE'DAN FOTOĞRAFI
+                          //SİLME KONUSUNDA DA TECRÜBE KAZANACAĞIM.
+                    }*/
+                  },
+                ),
+                ElevatedButton(onPressed: (){
+                  Navigator.pop(context);
+                }, child: Text("IPTAL ET"))
+              ],
             )
           ],
         ),
