@@ -1,4 +1,5 @@
 import 'package:firebase_firestore/services/database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
 import '../models/book_model.dart';
@@ -20,4 +21,11 @@ class BarrowBookViewModel with ChangeNotifier{
     await _database.setBookData(
         collectionPath: collectionPath, book: newBook.toMap());
   }
+
+  Future<void> deletePhoto(String photoUrl)async{
+    Reference photoRef= FirebaseStorage.instance.refFromURL(photoUrl);
+    await photoRef.delete();
+  }
+
+
 }

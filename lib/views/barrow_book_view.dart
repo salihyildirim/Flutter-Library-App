@@ -104,7 +104,7 @@ class _BorrowFormState extends State<BorrowForm> {
   BarrowBookViewModel barrowBookViewModel = BarrowBookViewModel();
   var _selectedBorrowDate;
   var _selectedReturnDate;
-  String? photoUrl = 'https://i.hizliresim.com/p61ovs2.jpg';
+  String? photoUrl;
 
   XFile? _image;
   XFile? _pickedFile;
@@ -145,188 +145,194 @@ class _BorrowFormState extends State<BorrowForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(14),
-      child: Form(
-        key: GlobalKey<FormState>(),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Flexible(
-                  child: Stack(
-                    children: [
-                      CircleAvatar(
-                        radius: 40,
-                        // child: (_image == null)
-                        //     ? Image(image: NetworkImage('https://i.hizliresim.com/p61ovs2.jpg'))
-                        //     : Image.file(File(_image!.path)),
-                        backgroundImage: (_image == null)
-                            ? NetworkImage(
-                                'https://i.hizliresim.com/p61ovs2.jpg')
-                            : FileImage(File(_image!.path))
-                                as ImageProvider<Object>?,
-                      ),
-                      Positioned(
-                          bottom: -5,
-                          right: -10,
-                          child: IconButton(
-                            icon: Icon(Icons.photo_camera_rounded),
-                            onPressed: getImage,
-                          ))
-                    ],
-                  ),
-                ),
-                Flexible(
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        controller: nameCtr,
-                        decoration: InputDecoration(
-                          hintText: 'Ad',
+    return ChangeNotifierProvider(
+    create: (context)=>BarrowBookViewModel(),
+      builder: (context,_)=> Container(
+        padding: EdgeInsets.all(14),
+        child: Form(
+          key: GlobalKey<FormState>(),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Flexible(
+                    child: Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 40,
+                          // child: (_image == null)
+                          //     ? Image(image: NetworkImage('https://i.hizliresim.com/p61ovs2.jpg'))
+                          //     : Image.file(File(_image!.path)),
+                          backgroundImage: (_image == null)
+                              ? NetworkImage(
+                                  'https://i.hizliresim.com/p61ovs2.jpg')
+                              : FileImage(File(_image!.path))
+                                  as ImageProvider<Object>?,
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Ad Giriniz';
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
-                      TextFormField(
-                        controller: surnameCtr,
-                        decoration: InputDecoration(
-                          hintText: 'Soyad',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Soyad Giriniz';
-                          } else {
-                            return null;
-                          }
-                        },
-                      ),
-                    ],
+                        Positioned(
+                            bottom: -5,
+                            right: -10,
+                            child: IconButton(
+                              icon: Icon(Icons.photo_camera_rounded),
+                              onPressed: getImage,
+                            ))
+                      ],
+                    ),
                   ),
-                ),
+                  Flexible(
+                    child: Column(
+                      children: [
+                        TextFormField(
+                          controller: nameCtr,
+                          decoration: InputDecoration(
+                            hintText: 'Ad',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Ad Giriniz';
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                        TextFormField(
+                          controller: surnameCtr,
+                          decoration: InputDecoration(
+                            hintText: 'Soyad',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Soyad Giriniz';
+                            } else {
+                              return null;
+                            }
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
 
-                // TextFormField(controller: nameCtr,decoration: InputDecoration(hintText: 'Ad',),validator: (value){
-                //   if(value == null ||value.isEmpty){
-                //     return 'Ad Giriniz';
-                //   }
-                //   else{
-                //     return null;
-                //   }
-                // },),
-                // TextFormField(controller: nameCtr,decoration: InputDecoration(hintText: 'Ad',),validator: (value){
-                //   if(value == null ||value.isEmpty){
-                //     return 'Ad Giriniz';
-                //   }
-                //   else{
-                //     return null;
-                //   }
-                // },),
-                // TextFormField(controller: nameCtr,decoration: InputDecoration(hintText: 'Ad',),validator: (value){
-                //   if(value == null ||value.isEmpty){
-                //     return 'Ad Giriniz';
-                //   }
-                //   else{
-                //     return null;
-                //   }
-                // },)
-              ],
-            ),
-            Row(
-              children: [
-                Flexible(
-                  child: TextFormField(
-                      onTap: () async {
-                        _selectedBorrowDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(-1000),
-                            lastDate: DateTime.now());
-                        if (_selectedBorrowDate != null) {
-                          borrowDateCtr.text =
-                              Calculator.dateTimeToString(_selectedBorrowDate);
-                        }
-                      },
-                      controller: borrowDateCtr,
-                      decoration: InputDecoration(
-                        hintText: 'Ödünç Tarihi',
-                        icon: Icon(Icons.date_range),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Lütfen Tarih Seçiniz!';
-                        } else {
-                          return null;
-                        }
-                      }),
-                ),
-                Flexible(
-                  child: TextFormField(
-                      onTap: () async {
-                        _selectedReturnDate = await showDatePicker(
-                            context: context,
-                            initialDate: DateTime.now(),
-                            firstDate: DateTime(-1000),
-                            lastDate: DateTime.now().add(Duration(days: 365)));
-                        if (_selectedReturnDate != null) {
-                          returnDateCtr.text =
-                              Calculator.dateTimeToString(_selectedReturnDate);
-                        }
-                      },
-                      controller: returnDateCtr,
-                      decoration: InputDecoration(
-                          hintText: 'İade Tarihi',
-                          icon: Icon(Icons.date_range)),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Lütfen Tarih Seçiniz!';
-                        } else {
-                          return null;
-                        }
-                      }),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 50,
-            ),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  child: Text('ÖDÜNÇ KAYIT EKLE'),
-                  onPressed: () async {
-                    BorrowInfo newBorrowInfo = BorrowInfo(
-                      name: nameCtr.text,
-                      surname: surnameCtr.text,
-                      photoUrl: photoUrl,
-                      borrowDate:
-                          Calculator.dateTimeToTimeStamp(_selectedBorrowDate),
-                      returnDate:
-                          Calculator.dateTimeToTimeStamp(_selectedReturnDate),
-                    );
-                    // widget.book.borrows.add(newBorrowInfo);
-                    // barrowBookViewModel.updateBook(
-                    //     borrowList: widget.book.borrows, book: widget.book);
-                    Navigator.pop(context, newBorrowInfo);
-                    /* if (_pickedFile != null) {
-                      photoUrl = await uploadImageToStorage(
-                          _image!); //UPLOADING TO STORAGE PHOTO TAKEN. KAYIT EKLE BUTONUNA BASTIKTAN SONRA STORAGE'A KAYDETMEK BU ŞEKİLDE DAHA MANTIKLI.
-                          //FAKAT FOTOĞRAFI ÇEKER ÇEKMEZ KAYDEDECEĞİM VE BOTTOMMODELSHEET KAPATILIRSA VEYA HATA VS. DURUMLARINDA STORAGE'DAN FOTOĞRAFI
-                          //SİLME KONUSUNDA DA TECRÜBE KAZANACAĞIM.
-                    }*/
-                  },
-                ),
-                ElevatedButton(onPressed: (){
-                  Navigator.pop(context);
-                }, child: Text("IPTAL ET"))
-              ],
-            )
-          ],
+                  // TextFormField(controller: nameCtr,decoration: InputDecoration(hintText: 'Ad',),validator: (value){
+                  //   if(value == null ||value.isEmpty){
+                  //     return 'Ad Giriniz';
+                  //   }
+                  //   else{
+                  //     return null;
+                  //   }
+                  // },),
+                  // TextFormField(controller: nameCtr,decoration: InputDecoration(hintText: 'Ad',),validator: (value){
+                  //   if(value == null ||value.isEmpty){
+                  //     return 'Ad Giriniz';
+                  //   }
+                  //   else{
+                  //     return null;
+                  //   }
+                  // },),
+                  // TextFormField(controller: nameCtr,decoration: InputDecoration(hintText: 'Ad',),validator: (value){
+                  //   if(value == null ||value.isEmpty){
+                  //     return 'Ad Giriniz';
+                  //   }
+                  //   else{
+                  //     return null;
+                  //   }
+                  // },)
+                ],
+              ),
+              Row(
+                children: [
+                  Flexible(
+                    child: TextFormField(
+                        onTap: () async {
+                          _selectedBorrowDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(-1000),
+                              lastDate: DateTime.now());
+                          if (_selectedBorrowDate != null) {
+                            borrowDateCtr.text =
+                                Calculator.dateTimeToString(_selectedBorrowDate);
+                          }
+                        },
+                        controller: borrowDateCtr,
+                        decoration: InputDecoration(
+                          hintText: 'Ödünç Tarihi',
+                          icon: Icon(Icons.date_range),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Lütfen Tarih Seçiniz!';
+                          } else {
+                            return null;
+                          }
+                        }),
+                  ),
+                  Flexible(
+                    child: TextFormField(
+                        onTap: () async {
+                          _selectedReturnDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(-1000),
+                              lastDate: DateTime.now().add(Duration(days: 365)));
+                          if (_selectedReturnDate != null) {
+                            returnDateCtr.text =
+                                Calculator.dateTimeToString(_selectedReturnDate);
+                          }
+                        },
+                        controller: returnDateCtr,
+                        decoration: InputDecoration(
+                            hintText: 'İade Tarihi',
+                            icon: Icon(Icons.date_range)),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Lütfen Tarih Seçiniz!';
+                          } else {
+                            return null;
+                          }
+                        }),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 50,
+              ),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ElevatedButton(
+                    child: Text('ÖDÜNÇ KAYIT EKLE'),
+                    onPressed: () async {
+                      BorrowInfo newBorrowInfo = BorrowInfo(
+                        name: nameCtr.text,
+                        surname: surnameCtr.text,
+                        photoUrl: photoUrl ?? 'https://i.hizliresim.com/p61ovs2.jpg',
+                        borrowDate:
+                            Calculator.dateTimeToTimeStamp(_selectedBorrowDate),
+                        returnDate:
+                            Calculator.dateTimeToTimeStamp(_selectedReturnDate),
+                      );
+                      // widget.book.borrows.add(newBorrowInfo);
+                      // barrowBookViewModel.updateBook(
+                      //     borrowList: widget.book.borrows, book: widget.book);
+                      Navigator.pop(context, newBorrowInfo);
+                      /* if (_pickedFile != null) {
+                        photoUrl = await uploadImageToStorage(
+                            _image!); //UPLOADING TO STORAGE PHOTO TAKEN. KAYIT EKLE BUTONUNA BASTIKTAN SONRA STORAGE'A KAYDETMEK BU ŞEKİLDE DAHA MANTIKLI.
+                            //FAKAT FOTOĞRAFI ÇEKER ÇEKMEZ KAYDEDECEĞİM VE BOTTOMMODELSHEET KAPATILIRSA VEYA HATA VS. DURUMLARINDA STORAGE'DAN FOTOĞRAFI
+                            //SİLME KONUSUNDA DA TECRÜBE KAZANACAĞIM.
+                      }*/
+                    },
+                  ),
+                  ElevatedButton(onPressed: (){
+                    if(photoUrl!=null){
+                      context.read<BarrowBookViewModel>().deletePhoto(photoUrl!);
+                    }
+                    Navigator.pop(context);
+                  }, child: Text("IPTAL ET"))
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );
