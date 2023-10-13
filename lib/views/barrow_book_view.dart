@@ -34,21 +34,24 @@ class _BarrowBookViewState extends State<BarrowBookView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
-                child: ListView.separated(
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        leading: CircleAvatar(
-                          radius: 25,
-                          backgroundImage: NetworkImage(
-                              borrowList[index].photoUrl ??
-                                  'https://i.hizliresim.com/p61ovs2.jpg'),
-                        ),
-                        title: Text(
-                            '${borrowList[index].name} ${borrowList[index].surname}'),
-                      );
-                    },
-                    separatorBuilder: (context, _) => Divider(),
-                    itemCount: borrowList.length),
+                child: Dismissible(
+                  key: UniqueKey(),
+                  child: ListView.separated(
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          leading: CircleAvatar(
+                            radius: 25,
+                            backgroundImage: NetworkImage(
+                                borrowList[index].photoUrl ??
+                                    'https://i.hizliresim.com/p61ovs2.jpg'),
+                          ),
+                          title: Text(
+                              '${borrowList[index].name} ${borrowList[index].surname}'),
+                        );
+                      },
+                      separatorBuilder: (context, _) => Divider(),
+                      itemCount: borrowList.length),
+                ),
               ),
               Flexible(
                   child: InkWell(
