@@ -34,7 +34,7 @@ class _BarrowBookViewState extends State<BarrowBookView> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
-                child: Dismissible(
+                child: Dismissible( // onDismiss icin silme fonks. yaz.
                   key: UniqueKey(),
                   child: ListView.separated(
                       itemBuilder: (context, index) {
