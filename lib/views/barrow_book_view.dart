@@ -28,17 +28,20 @@ class _BarrowBookViewState extends State<BarrowBookView> {
       builder: (context, _) => Scaffold(
           appBar: AppBar(
               title:
-                  Text('${widget.book.bookName.toUpperCase()} Ödünç Listesi'),
+                  Text('${widget.book.bookName.toUpperCase()} ÖDÜNÇ LİSTESİ'),
               centerTitle: true),
           body: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
-                child: Dismissible( // onDismiss icin silme fonks. yaz.
-                  key: UniqueKey(),
-                  child: ListView.separated(
-                      itemBuilder: (context, index) {
-                        return ListTile(
+                child: ListView.separated(
+                    itemBuilder: (context, index) {
+                      return Dismissible(
+                        key: UniqueKey(),
+                        onDismissed: (_){
+                          //context.read<BarrowBookViewModel>().deleteBook(widget.book,index);
+                        },
+                        child: ListTile(
                           leading: CircleAvatar(
                             radius: 25,
                             backgroundImage: NetworkImage(
@@ -47,34 +50,39 @@ class _BarrowBookViewState extends State<BarrowBookView> {
                           ),
                           title: Text(
                               '${borrowList[index].name} ${borrowList[index].surname}'),
-                        );
-                      },
-                      separatorBuilder: (context, _) => Divider(),
-                      itemCount: borrowList.length),
-                ),
+                        ),
+                      );
+                    },
+                    separatorBuilder: (context, _) => Divider(),
+                    itemCount: borrowList.length),
               ),
               Flexible(
                   child: InkWell(
                       //ALTTAKI MAVI YENI ODUNC BUTONU
                       onTap: () async {
                         BorrowInfo? newBorrowInfo = await showModalBottomSheet<
-                                BorrowInfo>(enableDrag: false,isDismissible: false,
+                                BorrowInfo>(
+                            enableDrag: false,
+                            isDismissible: false,
                             context: context,
                             // MODALBOTTOMSHEET EGER BEKLENMEDIK SEKILDE KAPATILIRSA
                             // BORROWINFO NULL DONECEK CUNKU BORROWINFO ATAMASINI ONPRESS DE YAPIYORUZ VE POP EDIYORUZ. BU ŞEKİLDE KT EDEBİLİRSİN.
                             builder: (BuildContext context) {
-                              return WillPopScope(onWillPop: ()async { return false; },
-                              child: BorrowForm());
+                              return WillPopScope(
+                                  onWillPop: () async {
+                                    return false;
+                                  },
+                                  child: BorrowForm());
                             });
-                        print("modalBottomSheet Donen BorrowInfoDegeri : $newBorrowInfo");
+                        print(
+                            "modalBottomSheet Donen BorrowInfoDegeri : $newBorrowInfo");
                         if (newBorrowInfo != null) {
                           setState(() {
                             borrowList.add(newBorrowInfo);
                           });
                           context.read<BarrowBookViewModel>().updateBook(
                               book: widget.book, borrowList: borrowList);
-                        }
-                        else if(newBorrowInfo==null){
+                        } else if (newBorrowInfo == null) {
                           //store'dan fotoyu sil.
                         }
                       },
@@ -149,8 +157,8 @@ class _BorrowFormState extends State<BorrowForm> {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-    create: (context)=>BarrowBookViewModel(),
-      builder: (context,_)=> Container(
+      create: (context) => BarrowBookViewModel(),
+      builder: (context, _) => Container(
         padding: EdgeInsets.all(14),
         child: Form(
           key: GlobalKey<FormState>(),
@@ -253,8 +261,8 @@ class _BorrowFormState extends State<BorrowForm> {
                               firstDate: DateTime(-1000),
                               lastDate: DateTime.now());
                           if (_selectedBorrowDate != null) {
-                            borrowDateCtr.text =
-                                Calculator.dateTimeToString(_selectedBorrowDate);
+                            borrowDateCtr.text = Calculator.dateTimeToString(
+                                _selectedBorrowDate);
                           }
                         },
                         controller: borrowDateCtr,
@@ -277,10 +285,11 @@ class _BorrowFormState extends State<BorrowForm> {
                               context: context,
                               initialDate: DateTime.now(),
                               firstDate: DateTime(-1000),
-                              lastDate: DateTime.now().add(Duration(days: 365)));
+                              lastDate:
+                                  DateTime.now().add(Duration(days: 365)));
                           if (_selectedReturnDate != null) {
-                            returnDateCtr.text =
-                                Calculator.dateTimeToString(_selectedReturnDate);
+                            returnDateCtr.text = Calculator.dateTimeToString(
+                                _selectedReturnDate);
                           }
                         },
                         controller: returnDateCtr,
@@ -300,7 +309,8 @@ class _BorrowFormState extends State<BorrowForm> {
               SizedBox(
                 height: 50,
               ),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   ElevatedButton(
                     child: Text('ÖDÜNÇ KAYIT EKLE'),
@@ -308,7 +318,8 @@ class _BorrowFormState extends State<BorrowForm> {
                       BorrowInfo newBorrowInfo = BorrowInfo(
                         name: nameCtr.text,
                         surname: surnameCtr.text,
-                        photoUrl: photoUrl ?? 'https://i.hizliresim.com/p61ovs2.jpg',
+                        photoUrl:
+                            photoUrl ?? 'https://i.hizliresim.com/p61ovs2.jpg',
                         borrowDate:
                             Calculator.dateTimeToTimeStamp(_selectedBorrowDate),
                         returnDate:
@@ -326,12 +337,16 @@ class _BorrowFormState extends State<BorrowForm> {
                       }*/
                     },
                   ),
-                  ElevatedButton(onPressed: (){
-                    if(photoUrl!=null){
-                      context.read<BarrowBookViewModel>().deletePhoto(photoUrl!);
-                    }
-                    Navigator.pop(context);
-                  }, child: Text("IPTAL ET"))
+                  ElevatedButton(
+                      onPressed: () {
+                        if (photoUrl != null) {
+                          context
+                              .read<BarrowBookViewModel>()
+                              .deletePhoto(photoUrl!);
+                        }
+                        Navigator.pop(context);
+                      },
+                      child: Text("IPTAL ET"))
                 ],
               )
             ],

@@ -21,4 +21,7 @@ class Database {
         .doc(Book.fromMap(book).id)
         .set(book);
   }
+  Future<void> deleteBorrow({required String collectionPath, required String docId,required int borrowIndis})async {
+    //borrowIndisli borrow sil
+  }
 }
