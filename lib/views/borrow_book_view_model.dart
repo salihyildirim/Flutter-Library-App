@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import '../models/book_model.dart';
 import '../models/borrow_model.dart';
 
-class BarrowBookViewModel with ChangeNotifier{
+class BarrowBookViewModel with ChangeNotifier {
   Database _database = Database();
   String collectionPath = 'books';
 
@@ -22,10 +22,16 @@ class BarrowBookViewModel with ChangeNotifier{
         collectionPath: collectionPath, book: newBook.toMap());
   }
 
-  Future<void> deletePhoto(String photoUrl)async{
-    Reference photoRef= FirebaseStorage.instance.refFromURL(photoUrl);
+  Future<void> deletePhoto(String photoUrl) async {
+    Reference photoRef = FirebaseStorage.instance.refFromURL(photoUrl);
     await photoRef.delete();
   }
 
-
+  Future<void> deleteABorrow(Book book, int deleteIndex) async {
+    _database.deleteABorrow(
+        collectionPath: collectionPath,
+        docId: book.id,
+        borrowList: book.borrows,
+        deleteIndex: deleteIndex);
+  }
 }
