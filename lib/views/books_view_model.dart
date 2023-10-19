@@ -30,5 +30,6 @@ class BooksViewModel extends ChangeNotifier {
   Future<void> deleteBook(Book book) async {
     await _database.deleteDocument(
         collectionPath: collectionPath, docId: book.id);
+
   }
 }

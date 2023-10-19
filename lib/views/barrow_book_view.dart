@@ -38,7 +38,9 @@ class _BarrowBookViewState extends State<BarrowBookView> {
                     itemBuilder: (context, index) {
                       return Dismissible(
                         key: UniqueKey(),
-                        onDismissed: (_){context.read<BarrowBookViewModel>().deleteABorrow(widget.book,index);
+                        onDismissed: (_)async{
+                         await Provider.of<BarrowBookViewModel>(context, listen: false)
+                            .deleteABorrow(widget.book,index);
                         },
                         child: ListTile(
                           leading: CircleAvatar(

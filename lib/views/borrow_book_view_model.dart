@@ -28,10 +28,7 @@ class BarrowBookViewModel with ChangeNotifier {
   }
 
   Future<void> deleteABorrow(Book book, int deleteIndex) async {
-    _database.deleteABorrow(
-        collectionPath: collectionPath,
-        docId: book.id,
-        borrowList: book.borrows,
-        deleteIndex: deleteIndex);
+   await _database.deleteABorrow(book:book,borrowIndex: deleteIndex,collectionPath: collectionPath);
+
   }
 }
