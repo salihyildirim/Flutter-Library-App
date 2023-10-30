@@ -45,7 +45,7 @@ class Database {
     // 'borrows' anahtarını kontrol et
     if (data.containsKey('borrows')) {
       // Borrows listesini al
-      final List<dynamic> borrows = data['borrows'];
+      final List<BorrowInfo> borrows = data['borrows'];
 
       // Belirtilen indisli öğeyi kaldır
       if (borrowIndex >= 0 && borrowIndex < borrows.length) {
