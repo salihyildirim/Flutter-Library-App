@@ -20,9 +20,15 @@ class BarrowBookView extends StatefulWidget {
 }
 
 class _BarrowBookViewState extends State<BarrowBookView> {
+  late List<BorrowInfo> borrowList;
+
   @override
+  void initState() {
+    borrowList = widget.book.borrows;
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
-    List<BorrowInfo> borrowList = widget.book.borrows;
     return ChangeNotifierProvider<BarrowBookViewModel>(
       create: (context) => BarrowBookViewModel(),
       builder: (context, _) => Scaffold(
@@ -38,9 +44,10 @@ class _BarrowBookViewState extends State<BarrowBookView> {
                     itemBuilder: (context, index) {
                       return Dismissible(
                         key: UniqueKey(),
-                        onDismissed: (_)async{
-                         await Provider.of<BarrowBookViewModel>(context, listen: false)
-                            .deleteABorrow(widget.book,index);
+                        onDismissed: (_) async {
+                          await Provider.of<BarrowBookViewModel>(context,
+                                  listen: false)
+                              .deleteABorrow(widget.book, index);
                         },
                         child: ListTile(
                           leading: CircleAvatar(
@@ -70,6 +77,7 @@ class _BarrowBookViewState extends State<BarrowBookView> {
                             // BORROWINFO NULL DONECEK CUNKU BORROWINFO ATAMASINI ONPRESS DE YAPIYORUZ VE POP EDIYORUZ. BU ŞEKİLDE KT EDEBİLİRSİN.
                             builder: (BuildContext context) {
                               return WillPopScope(
+                                  //sayfa bosluga vs tiklandiginde pop etmesin.
                                   onWillPop: () async {
                                     return false;
                                   },
@@ -78,11 +86,10 @@ class _BarrowBookViewState extends State<BarrowBookView> {
                         print(
                             "modalBottomSheet Donen BorrowInfoDegeri : $newBorrowInfo");
                         if (newBorrowInfo != null) {
-                          setState(() {
-                            borrowList.add(newBorrowInfo);
-                          });
+                          borrowList.add(newBorrowInfo);
                           context.read<BarrowBookViewModel>().updateBook(
                               book: widget.book, borrowList: borrowList);
+                          setState(() {});
                         } else if (newBorrowInfo == null) {
                           //store'dan fotoyu sil.
                         }
@@ -315,7 +322,7 @@ class _BorrowFormState extends State<BorrowForm> {
                 children: [
                   ElevatedButton(
                     child: Text('ÖDÜNÇ KAYIT EKLE'),
-                    onPressed: () async {
+                    onPressed: () {
                       BorrowInfo newBorrowInfo = BorrowInfo(
                         name: nameCtr.text,
                         surname: surnameCtr.text,
@@ -330,6 +337,7 @@ class _BorrowFormState extends State<BorrowForm> {
                       // barrowBookViewModel.updateBook(
                       //     borrowList: widget.book.borrows, book: widget.book);
                       Navigator.pop(context, newBorrowInfo);
+
                       /* if (_pickedFile != null) {
                         photoUrl = await uploadImageToStorage(
                             _image!); //UPLOADING TO STORAGE PHOTO TAKEN. KAYIT EKLE BUTONUNA BASTIKTAN SONRA STORAGE'A KAYDETMEK BU ŞEKİLDE DAHA MANTIKLI.

@@ -34,7 +34,11 @@ class Database {
     await documentRef.update({fieldName: FieldValue.delete()});
   }
 
-  Future<void> deleteABorrow({required Book book, required int borrowIndex, required String collectionPath}) async {
+  Future<void> deleteABorrow({
+    required Book book,
+    required int borrowIndex,
+    required String collectionPath,
+  }) async {
     // Dökümanı çek
     final docRef = _firestore.collection(collectionPath).doc(book.id);
     final document = await docRef.get();
@@ -42,19 +46,18 @@ class Database {
     // Dökümandan veriyi al
     final data = document.data() as Map<String, dynamic>;
 
-    // 'borrows' anahtarını kontrol et
-    if (data.containsKey('borrows')) {
-      // Borrows listesini al
-      final List<BorrowInfo> borrows = data['borrows'];
+    // Borrows listesini al
+    List<dynamic> dynamicBorrows = data['borrows'];
+    List<BorrowInfo> borrows = dynamicBorrows.map((item) => BorrowInfo.fromMap(item)).toList();
 
-      // Belirtilen indisli öğeyi kaldır
-      if (borrowIndex >= 0 && borrowIndex < borrows.length) {
-        borrows.removeAt(borrowIndex);
-      }
+    // Belirtilen indisli öğeyi kaldır
+    borrows.removeAt(borrowIndex);
 
-      // Veriyi güncelle ve Firestore'a geri yükle
-      await docRef.update({'borrows': borrows});
-    }
+    // Firestore'a geri yüklemek için BorrowInfo'ları Map'e dönüştür
+    List<Map<String, dynamic>> updatedBorrows = borrows.map((borrow) => borrow.toMap()).toList();
+
+    // Veriyi güncelle ve Firestore'a geri yükle
+    await docRef.update({'borrows': updatedBorrows});
   }
 
 }
