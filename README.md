@@ -1,16 +1,6 @@
-# firebase_firestore
+Kitaplar ekleyebileceğiniz, kitapları ödünç alan kullanıcıları ekleyebileceğiniz kütüphane uygulaması
 
-A new Flutter project firestore.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![lib_1](https://github.com/salihyildirim/Flutter-Library-App/assets/15340571/9d243b4b-0bd4-4438-aaac-19ce32ed8ece)
+![Lib_2](https://github.com/salihyildirim/Flutter-Library-App/assets/15340571/09b37b91-c4af-4313-9a0d-b63caa1226be)
+![Lib_3](https://github.com/salihyildirim/Flutter-Library-App/assets/15340571/3d9e0b76-b8a0-4bac-93ac-4943db3fcbb5)
+![Lib_4](https://github.com/salihyildirim/Flutter-Library-App/assets/15340571/581f42b3-fdc2-46ae-9f95-cd82bc3ac65c)
